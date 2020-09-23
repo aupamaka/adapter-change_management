@@ -80,6 +80,7 @@ class ServiceNowAdapter extends EventEmitter {
   connect() {
     // As a best practice, Itential recommends isolating the health check action
     // in its own method.
+    console.log("In connect **");
     this.healthcheck();
   }
 
@@ -94,6 +95,7 @@ class ServiceNowAdapter extends EventEmitter {
  *   that handles the response.
  */
 healthcheck(callback) {
+    console.log("In healthCheck ** 0");
  this.getRecord((result, error) => {
    /**
     * For this lab, complete the if else conditional
@@ -130,19 +132,17 @@ healthcheck(callback) {
       * parameter as an argument for the callback function's
       * responseData parameter.
       */
-    if (!validResponseRegex.test(response.statusCode)) {
-      console.error('Bad response code.');
-      callbackError = response;
-    } else if (response.body.includes('Instance Hibernating page')) {
-      callbackError = 'Service Now instance is hibernating';
+    if (result.body.includes('Instance Hibernating page')) {
+      callbackError = this.id + ` ** In healthcheck 2 ** error received ${JSON.stringify(error)}`;
       console.error(callbackError);
       this.emitOffline();
     } else {
-      this.emitOnline();  
-      callbackData = response;
+      this.emitOnline(); 
+      console.log(` ** In healthcheck 3 ** ${JSON.stringify(result)}`);
+      callbackData = result;
     }
    }
-   return callback(callbackData, callbackError);
+   //return callback(callbackData, callbackError);
  });
 }
 
@@ -201,11 +201,13 @@ healthcheck(callback) {
      */
      let callbackData = null
      let callbackError = null;
+     console.log("In getRecord ** 1");
      this.connector.get((data, error) => 
      {
          if(error)
             callbackError = error;
         callbackData = data;
+        console.log("In getRecord ** 2");
         return callback(callbackData, callbackError);
      }
      );
