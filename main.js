@@ -96,6 +96,7 @@ class ServiceNowAdapter extends EventEmitter {
  */
 healthcheck(callback) {
     console.log("In healthCheck ** 0");
+
  this.getRecord((result, error) => {
    /**
     * For this lab, complete the if else conditional
@@ -145,6 +146,7 @@ healthcheck(callback) {
    }
    //return callback(callbackData, callbackError);
  });
+
 }
 
   /**
@@ -236,7 +238,7 @@ healthcheck(callback) {
         //callbackData = data;
         console.log("In getRecord ** 2");
         console.log(JSON.stringify(returnArray));
-        return callback(returnArray, callbackError);
+        callback(returnArray, callbackError);
      }
      );
   }
@@ -257,6 +259,45 @@ healthcheck(callback) {
      * Note how the object was instantiated in the constructor().
      * post() takes a callback function.
      */
+     let callbackData = null
+     let callbackError = null;
+     let returnArray = new Array();
+     let result = null;
+     console.log("In postRecord ** 1");
+     this.connector.post(this.props, (data, error) => 
+     {
+        if(error)
+            callbackError = error;
+        //if(typeof data == "object")
+        //{
+            let dataString = JSON.stringify(data);
+            if (dataString.includes("body")) {
+                //console.log("body exists in the response: "+dataString);
+                var jsonString = JSON.stringify(data.body);
+                //var parsedString = JSON.parse(jsonString);
+                var parsedString = JSON.parse(data.body);
+
+                console.log("In postRecord ** 3 ** "+JSON.parse(jsonString));
+                //var ticketObject = JSON.parse(jsonString);
+
+                //for (var i = 0; i < parsedString.result.length; i++) {
+                        result = {
+                            change_ticket_number: parsedString.result.number,
+                            active: parsedString.result.active,
+                            priority: parsedString.result.priority,
+                            description: parsedString.result.description,
+                            work_start: parsedString.result.work_start,
+                            work_end: parsedString.result.work_end,
+                            change_ticket_key: parsedString.result.sys_id,
+                        };
+                    //};
+            }
+        //}
+        console.log("In postRecord ** 2");
+        console.log(JSON.stringify(result));
+        callback(result, callbackError);
+     }
+     );
   }
 }
 
