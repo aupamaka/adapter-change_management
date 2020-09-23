@@ -132,8 +132,7 @@ healthcheck(callback) {
       * parameter as an argument for the callback function's
       * responseData parameter.
       */
-    //if (result.body.includes('Instance Hibernating page')) {  
-    if (JSON.stringify(result).includes('Instance Hibernating page')) {
+    if (result.body.includes('Instance Hibernating page')) {
       callbackError = this.id + ` ** In healthcheck 2 ** error received ${JSON.stringify(error)}`;
       console.error(callbackError);
       this.emitOffline();
@@ -202,41 +201,14 @@ healthcheck(callback) {
      */
      let callbackData = null
      let callbackError = null;
-     let returnArray = new Array();
      console.log("In getRecord ** 1");
      this.connector.get((data, error) => 
      {
-        if(error)
+         if(error)
             callbackError = error;
-        //if(typeof data == "object")
-        //{
-            let dataString = JSON.stringify(data);
-            if (dataString.includes("body")) {
-                //console.log("body exists in the response: "+dataString);
-                var jsonString = JSON.stringify(data.body);
-                //var parsedString = JSON.parse(jsonString);
-                var parsedString = JSON.parse(data.body);
-
-                console.log("In getRecord ** 3 ** "+JSON.parse(jsonString));
-                //var ticketObject = JSON.parse(jsonString);
-
-                for (var i = 0; i < parsedString.result.length; i++) {
-                        returnArray.push({
-                            change_ticket_number: parsedString.result[i].number,
-                            active: parsedString.result[i].active,
-                            priority: parsedString.result[i].priority,
-                            description: parsedString.result[i].description,
-                            work_start: parsedString.result[i].work_start,
-                            work_end: parsedString.result[i].work_end,
-                            change_ticket_key: parsedString.result[i].sys_id,
-                        });
-                    };
-            }
-        //}
-        //callbackData = data;
+        callbackData = data;
         console.log("In getRecord ** 2");
-        console.log(JSON.stringify(returnArray));
-        return callback(returnArray, callbackError);
+        return callback(callbackData, callbackError);
      }
      );
   }
